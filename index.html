@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pretty Pink Flower Bouquet for Jireh</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+      --pink-soft: #ffb7c5;
+      --pink-medium: #ff758c;
+      --pink-deep: #ff4b6e;
+      --pink-dark: #c8234c;
+      --stem-color: #558b2f;
+      --stem-dark: #33691e;
+      --ribbon-color: #ff4081;
+      --paper-color: #fce4ec;
+      --paper-shadow: #f8bbd0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #fff5f7 0%, #fed6e3 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Floating Petals Canvas */
+    #petal-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main Container */
+    .bouquet-wrapper {
+      position: relative;
+      width: 400px;
+      height: 550px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      z-index: 2;
+    }
+
+    /* Bouquet Wrapper Paper */
+    .paper-back {
+      position: absolute;
+      bottom: 50px;
+      width: 280px;
+      height: 320px;
+      background: var(--paper-color);
+      clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+      z-index: 2;
+    }
+
+    .paper-front {
+      position: absolute;
+      bottom: 50px;
+      width: 250px;
+      height: 220px;
+      background: linear-gradient(to bottom, #f8bbd0, #f48fb1);
+      clip-path: polygon(10% 0, 90% 0, 75% 100%, 25% 100%);
+      z-index: 5;
+      box-shadow: inset 0 5px 15px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Ribbon Container */
+    .ribbon {
+      position: absolute;
+      bottom: 120px;
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .ribbon-knot {
+      width: 35px;
+      height: 25px;
+      background: var(--ribbon-color);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 2;
+    }
+
+    .ribbon-bow-left, .ribbon-bow-right {
+      position: absolute;
+      top: -10px;
+      width: 50px;
+      height: 40px;
+      background: var(--ribbon-color);
+      border-radius: 50% 50% 10% 50%;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .ribbon-bow-left {
+      left: -40px;
+      transform: rotate(-15deg);
+    }
+
+    .ribbon-bow-right {
+      right: -40px;
+      transform: scaleX(-1) rotate(-15deg);
+    }
+
+    .ribbon-tails {
+      display: flex;
+      gap: 10px;
+      margin-top: -5px;
+    }
+
+    .ribbon-tail {
+      width: 15px;
+      height: 70px;
+      background: var(--ribbon-color);
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
+    }
+
+    .ribbon-tail.left { transform: rotate(15deg); }
+    .ribbon-tail.right { transform: rotate(-15deg); }
+
+    /* Flower Arrangement Area */
+    .flowers-container {
+      position: absolute;
+      bottom: 160px;
+      width: 350px;
+      height: 350px;
+      z-index: 3;
+    }
+
+    /* Stems Container */
+    .stems-container {
+      position: absolute;
+      bottom: 20px;
+      width: 100%;
+      height: 250px;
+      z-index: 2;
+    }
+
+    .stem {
+      position: absolute;
+      bottom: 0;
+      background: linear-gradient(to right, var(--stem-dark), var(--stem-color));
+      border-radius: 4px;
+      transform-origin: bottom center;
+    }
+
+    .leaf {
+      position: absolute;
+      background: var(--stem-color);
+      border-radius: 0% 100% 0% 100%;
+      transform-origin: bottom left;
+    }
+
+    /* Flower Styles */
+    .flower {
+      position: absolute;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .flower:hover {
+      transform: scale(1.15) !important;
+      z-index: 10 !important;
+    }
+
+    /* Rose Flower */
+    .rose {
+      width: 70px;
+      height: 70px;
+    }
+
+    .rose .petal {
+      position: absolute;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: linear-gradient(135deg, var(--pink-medium), var(--pink-deep));
+      box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+      transform-origin: center bottom;
+    }
+
+    .rose .center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      background: var(--pink-dark);
+      border-radius: 50%;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+      z-index: 5;
+    }
+
+    /* Tulip Flower */
+    .tulip {
+      width: 60px;
+      height: 75px;
+    }
+
+    .tulip-petal {
+      position: absolute;
+      width: 35px;
+      height: 65px;
+      background: linear-gradient(to top, var(--pink-deep), var(--pink-soft));
+      border-radius: 50% 50% 20% 20%;
+    }
+
+    .tulip-petal.left {
+      left: 5px;
+      transform: rotate(-15deg);
+      z-index: 2;
+    }
+
+    .tulip-petal.right {
+      right: 5px;
+      transform: rotate(15deg);
+      z-index: 2;
+    }
+
+    .tulip-petal.center {
+      left: 12.5px;
+      top: -5px;
+      background: linear-gradient(to top, var(--pink-dark), var(--pink-medium));
+      z-index: 1;
+    }
+
+    /* Cherry Blossom */
+    .blossom {
+      width: 50px;
+      height: 50px;
+    }
+
+    .blossom-petal {
+      position: absolute;
+      top: 5px;
+      left: 17.5px;
+      width: 15px;
+      height: 25px;
+      background: linear-gradient(to top, var(--pink-soft), #ffffff);
+      border-radius: 50% 50% 20% 20%;
+      transform-origin: bottom center;
+      clip-path: polygon(0% 0%, 40% 0%, 50% 10%, 60% 0%, 100% 0%, 100% 100%, 0% 100%);
+    }
+
+    .blossom-center {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 10px;
+      height: 10px;
+      background: #ffb300;
+      border-radius: 50%;
+      z-index: 6;
+    }
+
+    /* Card Message Container */
+    .card-container {
+      position: absolute;
+      top: -20px;
+      right: 10px;
+      z-index: 7;
+      transform: rotate(8deg);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .card-container:hover {
+      transform: rotate(0deg) scale(1.05);
+    }
+
+    .card {
+      background: #ffffff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #f8bbd0;
+      text-align: center;
+      max-width: 180px;
+    }
+
+    .card p {
+      font-family: 'Georgia', serif;
+      font-style: italic;
+      color: #ad1457;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .card .name-tag {
+      font-weight: bold;
+      font-size: 16px;
+      color: var(--pink-deep);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* UI Controls Panel */
+    .controls {
+      margin-top: 25px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      background: #ffffff;
+      color: var(--pink-deep);
+      border: 2px solid var(--pink-soft);
+      padding: 10px 18px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      outline: none;
+    }
+
+    .btn:hover {
+      background: var(--pink-deep);
+      color: #ffffff;
+      border-color: var(--pink-deep);
+      transform: translateY(-2deg);
+      box-shadow: 0 4px 12px rgba(255, 75, 110, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Sparkle Effects */
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #fff;
+      box-shadow: 0 0 10px #fff, 0 0 20px var(--pink-soft);
+      pointer-events: none;
+      animation: sparkleFade 1s linear forwards;
+      z-index: 20;
+    }
+
+    @keyframes sparkleFade {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(1.5); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Petals Canvas -->
+  <canvas id="petal-canvas"></canvas>
+
+  <!-- Main Bouquet Container -->
+  <div class="bouquet-wrapper" id="bouquet">
+    
+    <!-- Interactive Note Card Dedicated to Jireh -->
+    <div class="card-container" id="card" onclick="changeNote()">
+      <div class="card">
+        <p id="card-text"><span class="name-tag">For Jireh only 💖</span>Para sa'yo! 🌸<br>Have a wonderful day!</p>
+      </div>
+    </div>
+
+    <!-- Flower Stems -->
+    <div class="stems-container" id="stems"></div>
+
+    <!-- Flower Flowers -->
+    <div class="flowers-container" id="flowers"></div>
+
+    <!-- Wrapping Paper Layers -->
+    <div class="paper-back"></div>
+    <div class="paper-front"></div>
+
+    <!-- Ribbon -->
+    <div class="ribbon" id="ribbon">
+      <div class="ribbon-bow-left"></div>
+      <div class="ribbon-bow-right"></div>
+      <div class="ribbon-knot"></div>
+      <div class="ribbon-tails">
+        <div class="ribbon-tail left"></div>
+        <div class="ribbon-tail right"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Controls -->
+  <div class="controls">
+    <button class="btn" onclick="addFlower('rose')">🌹 Dagdag Rose</button>
+    <button class="btn" onclick="addFlower('tulip')">🌷 Dagdag Tulip</button>
+    <button class="btn" onclick="addFlower('blossom')">🌸 Dagdag Blossom</button>
+    <button class="btn" onclick="changeRibbonColor()">🎀 Palit Ribbon</button>
+    <button class="btn" onclick="resetBouquet()">🔄 I-reset</button>
+  </div>
+
+  <script>
+    // --- Canvas Floating Petals Animation ---
+    const canvas = document.getElementById('petal-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const petals = [];
+    const petalColors = ['#ffb7c5', '#ff758c', '#ff4b6e', '#f8bbd0'];
+
+    class Petal {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = -20;
+        this.size = Math.random() * 8 + 6;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.angle = Math.random() * 360;
+        this.spin = Math.random() * 2 - 1;
+        this.color = petalColors[Math.floor(Math.random() * petalColors.length)];
+        this.opacity = Math.random() * 0.7 + 0.3;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.01) + this.speedX;
+        this.angle += this.spin;
+
+        if (this.y > canvas.height + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.angle * Math.PI) / 180);
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size, -this.size, -this.size, this.size, 0, this.size * 1.5);
+        ctx.bezierCurveTo(this.size, this.size, this.size, -this.size, 0, 0);
+        ctx.fill();
+
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < 35; i++) {
+      petals.push(new Petal());
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animatePetals);
+    }
+    animatePetals();
+
+    // --- Dedicated Messages for Jireh ---
+    const flowersContainer = document.getElementById('flowers');
+    const stemsContainer = document.getElementById('stems');
+
+    const notes = [
+      "<span class='name-tag'>For Jireh only 💖</span>Para sa'yo! 🌸<br>Have a wonderful day!",
+      "<span class='name-tag'>For Jireh only 💖</span>You are blooming<br>beautifully today! 💕",
+      "<span class='name-tag'>For Jireh only 💖</span>Isang magandang bouquet<br>para sa magandang tao! ✨",
+      "<span class='name-tag'>For Jireh only 💖</span>Smile Jireh!<br>You look amazing! 🌷",
+      "<span class='name-tag'>For Jireh only 💖</span>Sending you love<br>and fresh flowers! 🌹"
+    ];
+    let noteIndex = 0;
+
+    function changeNote() {
+      noteIndex = (noteIndex + 1) % notes.length;
+      document.getElementById('card-text').innerHTML = notes[noteIndex];
+    }
+
+    // Default Flower Positions & Types
+    const initialFlowers = [
+      { type: 'rose', x: 140, y: 120, scale: 1.1 },
+      { type: 'rose', x: 80, y: 150, scale: 0.95 },
+      { type: 'rose', x: 200, y: 140, scale: 1.0 },
+      { type: 'tulip', x: 110, y: 70, scale: 1.0 },
+      { type: 'tulip', x: 170, y: 80, scale: 1.05 },
+      { type: 'blossom', x: 50, y: 100, scale: 0.9 },
+      { type: 'blossom', x: 230, y: 100, scale: 0.9 },
+      { type: 'blossom', x: 140, y: 40, scale: 0.85 },
+    ];
+
+    function createStem(startX, startY, angle) {
+      const stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.style.left = `${startX}px`;
+      stem.style.height = `${startY}px`;
+      stem.style.width = '6px';
+      stem.style.transform = `rotate(${angle}deg)`;
+
+      if (Math.random() > 0.4) {
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        leaf.style.width = '20px';
+        leaf.style.height = '10px';
+        leaf.style.bottom = `${Math.random() * 80 + 40}px`;
+        leaf.style.left = Math.random() > 0.5 ? '4px' : '-18px';
+        leaf.style.transform = Math.random() > 0.5 ? 'rotate(-30deg)' : 'rotate(30deg) scaleX(-1)';
+        stem.appendChild(leaf);
+      }
+
+      stemsContainer.appendChild(stem);
+    }
+
+    function createRoseElement() {
+      const rose = document.createElement('div');
+      rose.className = 'flower rose';
+
+      const center = document.createElement('div');
+      center.className = 'center';
+      rose.appendChild(center);
+
+      const numPetals = 8;
+      for (let i = 0; i < numPetals; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        const size = 30 + (i * 3);
+        petal.style.width = `${size}px`;
+        petal.style.height = `${size}px`;
+        petal.style.top = `${35 - size / 2}px`;
+        petal.style.left = `${35 - size / 2}px`;
+        petal.style.transform = `rotate(${i * (360 / numPetals)}deg) translateY(-${i * 1.5}px)`;
+        rose.appendChild(petal);
+      }
+
+      return rose;
+    }
+
+    function createTulipElement() {
+      const tulip = document.createElement('div');
+      tulip.className = 'flower tulip';
+
+      const pCenter = document.createElement('div');
+      pCenter.className = 'tulip-petal center';
+      const pLeft = document.createElement('div');
+      pLeft.className = 'tulip-petal left';
+      const pRight = document.createElement('div');
+      pRight.className = 'tulip-petal right';
+
+      tulip.appendChild(pCenter);
+      tulip.appendChild(pLeft);
+      tulip.appendChild(pRight);
+
+      return tulip;
+    }
+
+    function createBlossomElement() {
+      const blossom = document.createElement('div');
+      blossom.className = 'flower blossom';
+
+      const center = document.createElement('div');
+      center.className = 'blossom-center';
+      blossom.appendChild(center);
+
+      for (let i = 0; i < 5; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'blossom-petal';
+        petal.style.transform = `rotate(${i * 72}deg)`;
+        blossom.appendChild(petal);
+      }
+
+      return blossom;
+    }
+
+    function renderFlower(type, x, y, scale = 1) {
+      let flowerEl;
+      if (type === 'rose') flowerEl = createRoseElement();
+      else if (type === 'tulip') flowerEl = createTulipElement();
+      else flowerEl = createBlossomElement();
+
+      flowerEl.style.left = `${x}px`;
+      flowerEl.style.top = `${y}px`;
+      flowerEl.style.transform = `scale(${scale})`;
+
+      flowerEl.addEventListener('click', (e) => {
+        createSparkles(e.clientX, e.clientY);
+      });
+
+      flowersContainer.appendChild(flowerEl);
+
+      const stemStartX = x + 25;
+      const stemHeight = 220 - y;
+      const angle = (x - 150) * 0.15;
+      createStem(stemStartX, stemHeight, angle);
+    }
+
+    function initBouquet() {
+      flowersContainer.innerHTML = '';
+      stemsContainer.innerHTML = '';
+      initialFlowers.forEach(f => renderFlower(f.type, f.x, f.y, f.scale));
+    }
+
+    function addFlower(type) {
+      const x = Math.floor(Math.random() * 200) + 50;
+      const y = Math.floor(Math.random() * 120) + 30;
+      const scale = 0.85 + Math.random() * 0.3;
+      renderFlower(type, x, y, scale);
+    }
+
+    function resetBouquet() {
+      initBouquet();
+    }
+
+    // Ribbon Color Switcher
+    const ribbonColors = ['#ff4081', '#e91e63', '#ab47bc', '#ff80ab', '#d81b60'];
+    let colorIndex = 0;
+
+    function changeRibbonColor() {
+      colorIndex = (colorIndex + 1) % ribbonColors.length;
+      document.documentElement.style.setProperty('--ribbon-color', ribbonColors[colorIndex]);
+    }
+
+    // Sparkle Effect
+    function createSparkles(x, y) {
+      for (let i = 0; i < 8; i++) {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle';
+        sparkle.style.left = `${x + (Math.random() * 40 - 20)}px`;
+        sparkle.style.top = `${y + (Math.random() * 40 - 20)}px`;
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => {
+          sparkle.remove();
+        }, 1000);
+      }
+    }
+
+    initBouquet();
+  </script>
+</body>
+</html>
