@@ -378,7 +378,7 @@
     <!-- Interactive Note Card Dedicated to Jireh -->
     <div class="card-container" id="card" onclick="changeNote()">
       <div class="card">
-        <p id="card-text"><span class="name-tag">For Jireh only 💖</span>Para sa'yo! 🌸<br>Have a wonderful day!</p>
+        <p id="card-text"><span class="name-tag">For Jireh only 💖</span>Just for you! 🌸<br>Have a wonderful day!</p>
       </div>
     </div>
 
@@ -404,13 +404,13 @@
     </div>
   </div>
 
-  <!-- Interactive Controls -->
+  <!-- Interactive Controls (English) -->
   <div class="controls">
-    <button class="btn" onclick="addFlower('rose')">🌹 Dagdag Rose</button>
-    <button class="btn" onclick="addFlower('tulip')">🌷 Dagdag Tulip</button>
-    <button class="btn" onclick="addFlower('blossom')">🌸 Dagdag Blossom</button>
-    <button class="btn" onclick="changeRibbonColor()">🎀 Palit Ribbon</button>
-    <button class="btn" onclick="resetBouquet()">🔄 I-reset</button>
+    <button class="btn" onclick="addFlower('rose')">🌹 Add Rose</button>
+    <button class="btn" onclick="addFlower('tulip')">🌷 Add Tulip</button>
+    <button class="btn" onclick="addFlower('blossom')">🌸 Add Blossom</button>
+    <button class="btn" onclick="changeRibbonColor()">🎀 Change Ribbon</button>
+    <button class="btn" onclick="resetBouquet()">🔄 Reset</button>
   </div>
 
   <script>
@@ -486,15 +486,15 @@
     }
     animatePetals();
 
-    // --- Dedicated Messages for Jireh ---
+    // --- Dedicated English Messages for Jireh ---
     const flowersContainer = document.getElementById('flowers');
     const stemsContainer = document.getElementById('stems');
 
     const notes = [
-      "<span class='name-tag'>For Jireh only 💖</span>Para sa'yo! 🌸<br>Have a wonderful day!",
+      "<span class='name-tag'>For Jireh only 💖</span>Just for you! 🌸<br>Have a wonderful day!",
       "<span class='name-tag'>For Jireh only 💖</span>You are blooming<br>beautifully today! 💕",
-      "<span class='name-tag'>For Jireh only 💖</span>Isang magandang bouquet<br>para sa magandang tao! ✨",
-      "<span class='name-tag'>For Jireh only 💖</span>Smile Jireh!<br>You look amazing! 🌷",
+      "<span class='name-tag'>For Jireh only 💖</span>A lovely bouquet<br>for a lovely person! ✨",
+      "<span class='name-tag'>For Jireh only 💖</span>Keep smiling, Jireh!<br>You look amazing! 🌷",
       "<span class='name-tag'>For Jireh only 💖</span>Sending you love<br>and fresh flowers! 🌹"
     ];
     let noteIndex = 0;
